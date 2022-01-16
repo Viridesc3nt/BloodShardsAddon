@@ -18,15 +18,10 @@ public class BloodShardsListener implements Listener {
     public void onSneak(PlayerToggleSneakEvent event) {
 
             Player player = event.getPlayer();
-
-            System.out.println("Player has sneaked");
             BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 
             if(bPlayer.canBend(CoreAbility.getAbility(BloodShards.class))) {
                 new BloodShards(player);
-
-
-
         }
 
     }
@@ -47,7 +42,6 @@ public class BloodShardsListener implements Listener {
 
     }
 
-
-
 }
+
 
