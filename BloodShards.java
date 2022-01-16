@@ -85,9 +85,11 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
         if(state == States.SHARDS_READY) {
 
             direction = player.getLocation().getDirection();
-            direction.multiply(SPEED);
-            location = player.getEyeLocation();
+            Vector c = player.getLocation().getDirection();
+            c.setY(0);
+            location = player.getEyeLocation().subtract(0, 0.6, 0).add(c);
             distanceTravelled = 0;
+            direction.multiply(0.05 * SPEED);
             NUMOFSHARDS--;
             state = States.TRAVELLING;
         }
@@ -112,7 +114,7 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
     }
 
     private void affectTargets() {
-        List<Entity> targets  = GeneralMethods.getEntitiesAroundPoint(location, 1);
+        List<Entity> targets  = GeneralMethods.getEntitiesAroundPoint(location, 0.5);
         for (Entity target : targets) {
             if (target.getUniqueId() == player.getUniqueId()) {
                 continue;
@@ -129,10 +131,12 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
         if(!player.isSneaking()) {
             removeWithCooldown();
         }
+
+        this.distanceTravelled += SPEED;
         for (double d = 0; d < SPEED; d += 0.05 * SPEED) {
             ParticleEffect.REDSTONE.display(location, 10, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(102, 0 ,0), (float) 1.2));
             location.add(direction);
-            this.distanceTravelled += SPEED;
+
             affectTargets();
 
             if(this.distanceTravelled > RANGE) {
@@ -145,7 +149,7 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
 
 
         }
-        
+
     }
 
 
@@ -164,7 +168,7 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
                 progressTravelling();
                 break;
         }
-        
+
     }
 
     @Override
@@ -238,4 +242,3 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
         return VERSION;
     }
 }
-
