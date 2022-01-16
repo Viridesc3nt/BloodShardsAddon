@@ -82,8 +82,6 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
 
     public void onClick() {
 
-
-
         if(state == States.SHARDS_READY) {
 
             direction = player.getLocation().getDirection();
@@ -102,14 +100,15 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
 
 
     private void progressShardsReady() {
-
-        locationOfDisplay = player.getEyeLocation().add(player.getLocation().getDirection());
+        Vector v = player.getLocation().getDirection();
+        v.setY(0);
+        locationOfDisplay = player.getEyeLocation().subtract(0, 0.4, 0).add(v);
         if(!player.isSneaking()) {
             removeWithCooldown();
         }
         for(int i = 0; i <= NUMOFSHARDS; i++) {
 
-            ParticleEffect.REDSTONE.display(locationOfDisplay, 1, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(255, 0, 0), (float) 1.2));
+            ParticleEffect.REDSTONE.display(locationOfDisplay, 1, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(102, 0, 0), (float) 1.2));
 
         }
     }
@@ -135,11 +134,10 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
 
 
         System.out.println(NUMOFSHARDS);
-        ParticleEffect.REDSTONE.display(location, 10, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(255, 0 ,0), (float) 1.2));
+        ParticleEffect.REDSTONE.display(location, 10, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(102, 0 ,0), (float) 1.2));
         location.add(direction);
         this.distanceTravelled += SPEED;
         affectTargets();
-        System.out.println(distanceTravelled);
 
         if(this.distanceTravelled > RANGE) {
             if(NUMOFSHARDS == 0) {
@@ -246,3 +244,4 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
         return VERSION;
     }
 }
+
