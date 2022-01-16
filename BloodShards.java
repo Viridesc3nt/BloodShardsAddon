@@ -102,14 +102,12 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
     private void progressShardsReady() {
         Vector v = player.getLocation().getDirection();
         v.setY(0);
-        locationOfDisplay = player.getEyeLocation().subtract(0, 0.4, 0).add(v);
+        locationOfDisplay = player.getEyeLocation().subtract(0, 0.6, 0).add(v);
         if(!player.isSneaking()) {
             removeWithCooldown();
         }
         for(int i = 0; i <= NUMOFSHARDS; i++) {
-
             ParticleEffect.REDSTONE.display(locationOfDisplay, 1, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(102, 0, 0), (float) 1.2));
-
         }
     }
 
@@ -131,26 +129,24 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
         if(!player.isSneaking()) {
             removeWithCooldown();
         }
+        for (double d = 0; d < SPEED; d += 0.05 * SPEED) {
+            ParticleEffect.REDSTONE.display(location, 10, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(102, 0 ,0), (float) 1.2));
+            location.add(direction);
+            this.distanceTravelled += SPEED;
+            affectTargets();
 
-
-        System.out.println(NUMOFSHARDS);
-        ParticleEffect.REDSTONE.display(location, 10, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(102, 0 ,0), (float) 1.2));
-        location.add(direction);
-        this.distanceTravelled += SPEED;
-        affectTargets();
-
-        if(this.distanceTravelled > RANGE) {
-            if(NUMOFSHARDS == 0) {
-                removeWithCooldown();
-                return;
+            if(this.distanceTravelled > RANGE) {
+                if(NUMOFSHARDS == 0) {
+                    removeWithCooldown();
+                    return;
+                }
+                state = States.SHARDS_READY;
             }
-            state = States.SHARDS_READY;
-        }
-
-
 
 
         }
+        
+    }
 
 
     @Override
@@ -167,10 +163,8 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
             case TRAVELLING:
                 progressTravelling();
                 break;
-
         }
-
-
+        
     }
 
     @Override
@@ -206,7 +200,7 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
         ConfigManager.defaultConfig.get().addDefault(path+"NUMOFSHARDS", 4);
         ConfigManager.defaultConfig.get().addDefault(path+"DAMAGERPERSHARD", 1);
         ConfigManager.defaultConfig.get().addDefault(path+"RANGE", 40);
-        ConfigManager.defaultConfig.get().addDefault(path+"SPEED", 3);
+        ConfigManager.defaultConfig.get().addDefault(path+"SPEED", 5);
         ConfigManager.defaultConfig.get().addDefault(path+"COOLDOWN", 5000);
         ProjectKorra.plugin.getServer().getPluginManager().registerEvents(listener, ProjectKorra.plugin);
 
