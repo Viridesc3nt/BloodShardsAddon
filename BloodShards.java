@@ -41,6 +41,7 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
 
 
     private Location location;
+    private Location locationOfDisplay;
     private Permission perm;
     private Vector direction;
     private double distanceTravelled;
@@ -68,10 +69,10 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
 
 
 
-        location = player.getEyeLocation();
+
 
         state = States.SHARDS_READY;
-        distanceTravelled = 0;
+
 
         if(!bPlayer.isOnCooldown(this)) {
             start();
@@ -80,10 +81,17 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
 
 
     public void onClick() {
+
+
+
         if(state == States.SHARDS_READY) {
 
-            direction = GeneralMethods.getDirection(location, GeneralMethods.getTargetedLocation(player, RANGE * RANGE)).normalize().multiply(SPEED);
+            //direction = GeneralMethods.getDirection(location, GeneralMethods.getTargetedLocation(player, RANGE * RANGE)).normalize().multiply(SPEED);
+            direction = player.getLocation().getDirection();
             direction.multiply(0.5);
+            location = player.getEyeLocation();
+            distanceTravelled = 0;
+            NUMOFSHARDS--;
             state = States.TRAVELLING;
 
 
@@ -99,8 +107,14 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
 
 
     private void progressShardsReady() {
-        for(int i = 0; i < NUMOFSHARDS; i++) {
-            ParticleEffect.REDSTONE.display(location, 1, 0, 0, 1, new Particle.DustOptions(Color.fromRGB(255, 0, 0), (float) 1.2));
+
+        locationOfDisplay = player.getEyeLocation();
+        if(!player.isSneaking()) {
+            removeWithCooldown();
+        }
+        for(int i = 0; i <= NUMOFSHARDS; i++) {
+
+            ParticleEffect.REDSTONE.display(locationOfDisplay, 1, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(255, 0, 0), (float) 1.2));
 
         }
 
@@ -121,32 +135,35 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
 
     }
 
+
     private void progressTravelling() {
         if(!player.isSneaking()) {
             removeWithCooldown();
         }
 
         if(NUMOFSHARDS > 0) {
+            System.out.println(NUMOFSHARDS);
             ParticleEffect.REDSTONE.display(location, 10, 0, 0, 0, new Particle.DustOptions(Color.fromRGB(255, 0 ,0), (float) 1.2));
             location.add(direction);
             this.distanceTravelled += SPEED;
             affectTargets();
 
-            System.out.println(NUMOFSHARDS);
-            NUMOFSHARDS--;
-
-
-
-        }
-        if(NUMOFSHARDS == 0) {
-            removeWithCooldown();
-
-        }
+            if(this.distanceTravelled > RANGE) {
+                if(NUMOFSHARDS == 0) {
+                    removeWithCooldown();
+                    return;
+                }
+                state = States.SHARDS_READY;
+            }
 
 
 
 
         }
+
+    }
+
+
 
 
 
@@ -206,10 +223,10 @@ public final class BloodShards extends BloodAbility implements AddonAbility {
         perm = new Permission("bending.ability.BloodShards");
         ProjectKorra.plugin.getServer().getPluginManager().addPermission(perm);
         listener = new BloodShardsListener();
-        ConfigManager.defaultConfig.get().addDefault(path+"NUMOFSHARDS", 4);
+        ConfigManager.defaultConfig.get().addDefault(path+"NUMOFSHARDS", 5);
         ConfigManager.defaultConfig.get().addDefault(path+"DAMAGERPERSHARD", 1);
-        ConfigManager.defaultConfig.get().addDefault(path+"RANGE", 10);
-        ConfigManager.defaultConfig.get().addDefault(path+"SPEED", 3);
+        ConfigManager.defaultConfig.get().addDefault(path+"RANGE", 80);
+        ConfigManager.defaultConfig.get().addDefault(path+"SPEED", 7);
         ConfigManager.defaultConfig.get().addDefault(path+"COOLDOWN", 5000);
         ProjectKorra.plugin.getServer().getPluginManager().registerEvents(listener, ProjectKorra.plugin);
 
